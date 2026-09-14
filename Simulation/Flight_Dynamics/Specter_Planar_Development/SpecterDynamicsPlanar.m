@@ -15,9 +15,10 @@ delta = p.delta;
 
 m     = MassModelPlanar(t,p);
 T     = ThrustModelPlanar(t,p);
+[Dx,Dz,D] = DragModelPlanar(vx,vz,p);
 
-ax = (T/m)*sin(theta+delta);
-az = (T/m)*cos(theta+delta)-g;
+ax = (T*sin(theta+delta)+Dx)/m;
+az = (T*cos(theta+delta)+Dz)/m-g;
 
 alpha = (l*T*sin(delta))/I;
 
