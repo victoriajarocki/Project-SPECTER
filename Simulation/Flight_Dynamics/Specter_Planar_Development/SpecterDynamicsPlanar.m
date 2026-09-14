@@ -14,8 +14,13 @@ l = p.l;
 I = p.I;
 
 % Commanded gimbal angle
-deltaCmd = GimbalCommandPlanar(t,p);
+T = ThrustModelPlanar(t,p);
 
+if T > 0
+    deltaCmd = AttitudeControllerPlanar(theta,omega,p);
+else
+    deltaCmd = 0;
+end
 % Servo dynamics
 deltaDotRaw = (deltaCmd - delta)/p.tauServo;
 
@@ -25,7 +30,6 @@ deltaDot = max(min(deltaDotRaw,p.deltaRateMax), ...
 
 % Vehicle models
 m = MassModelPlanar(t,p);
-T = ThrustModelPlanar(t,p);
 
 [Dx,Dz,~] = DragModelPlanar(z,vx,vz,p);
 
@@ -42,6 +46,11 @@ az = (T*cos(theta + delta) + Dz + Nz)/m - g;
 Mtvc = l*T*sin(delta);
 
 thetaDDot = (Mtvc + Maero)/I;
+
+
+
+T = ThrustModelPlanar(t,p);
+
 
 % State derivatives
 dX = [vx;
