@@ -11,7 +11,7 @@ omega = X(6);
 
 m     = p.m;
 g     = p.g;
-T     = p.T;
+T     = ThrustModelPlanar(t,p);
 l     = p.l;
 I     = p.I;
 delta = p.delta;
