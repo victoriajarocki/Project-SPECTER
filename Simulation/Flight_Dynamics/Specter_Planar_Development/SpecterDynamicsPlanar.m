@@ -8,16 +8,17 @@ theta = X(5);
 omega = X(6);
 
 % Parameters
-
-m     = p.m;
 g     = p.g;
-T     = ThrustModelPlanar(t,p);
 l     = p.l;
 I     = p.I;
 delta = p.delta;
 
+m     = MassModelPlanar(t,p);
+T     = ThrustModelPlanar(t,p);
+
 ax = (T/m)*sin(theta+delta);
 az = (T/m)*cos(theta+delta)-g;
+
 alpha = (l*T*sin(delta))/I;
 
 dX = [vx;
