@@ -6,27 +6,50 @@ vx    = X(3);
 vz    = X(4);
 theta = X(5);
 omega = X(6);
+delta = X(7);
 
 % Parameters
-g     = p.g;
-l     = p.l;
-I     = p.I;
-delta = p.delta;
+g = p.g;
+l = p.l;
+I = p.I;
 
-m     = MassModelPlanar(t,p);
-T     = ThrustModelPlanar(t,p);
-[Dx,Dz,D] = DragModelPlanar(vx,vz,p);
+% Commanded gimbal angle
+deltaCmd = GimbalCommandPlanar(t,p);
 
-ax = (T*sin(theta+delta)+Dx)/m;
-az = (T*cos(theta+delta)+Dz)/m-g;
+% Servo dynamics
+deltaDotRaw = (deltaCmd - delta)/p.tauServo;
 
-alpha = (l*T*sin(delta))/I;
+% Servo rate limit
+deltaDot = max(min(deltaDotRaw,p.deltaRateMax), ...
+               -p.deltaRateMax);
 
+% Vehicle models
+m = MassModelPlanar(t,p);
+T = ThrustModelPlanar(t,p);
+
+[Dx,Dz,~] = DragModelPlanar(z,vx,vz,p);
+
+[Nx,Nz,~,~,~] = ...
+    NormalForceModelPlanar(z,vx,vz,theta,p);
+
+Maero = AeroMomentModelPlanar(theta,Nx,Nz,p);
+
+% Translational dynamics
+ax = (T*sin(theta + delta) + Dx + Nx)/m;
+az = (T*cos(theta + delta) + Dz + Nz)/m - g;
+
+% Rotational dynamics
+Mtvc = l*T*sin(delta);
+
+thetaDDot = (Mtvc + Maero)/I;
+
+% State derivatives
 dX = [vx;
-    vz;
-    ax;
-    az;
-    omega;
-    alpha];
+      vz;
+      ax;
+      az;
+      omega;
+      thetaDDot;
+      deltaDot];
 
 end
