@@ -1,0 +1,19 @@
+# MATLAB autosave and temporary files
+*.asv
+*.m~
+
+# MATLAB generated files
+*.mex*
+
+# MATLAB / Simulink generated folders
+slprj/
+codegen/
+
+# Simulink cache files
+*.slxc
+
+# Windows files
+Thumbs.db
+
+# macOS files
+.DS_Store
